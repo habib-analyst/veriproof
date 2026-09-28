@@ -1,4 +1,8 @@
-from veriproof.eval.metrics import compute_detection_metrics, compute_localization_metrics
+from veriproof.eval.metrics import (
+    compute_detection_metrics,
+    compute_localization_metrics,
+)
+
 
 def run_eval(predict_fn, samples):
     gts, preds = [], []

@@ -1,6 +1,10 @@
 import numpy as np
-from veriproof.eval.protocol import GroundTruth, Prediction
-from veriproof.eval.metrics import compute_detection_metrics, compute_localization_metrics
+
+from veriproof.eval.metrics import (
+    compute_detection_metrics,
+    compute_localization_metrics,
+)
+
 
 def test_detection_metrics_perfect_and_chance():
     gt = [0, 1, 1, 0]
@@ -13,8 +17,10 @@ def test_detection_metrics_perfect_and_chance():
     assert m2["accuracy"] == 0.0
 
 def test_localization_metrics():
-    a = np.zeros((8, 8), dtype=np.uint8); a[2:6, 2:6] = 1
-    b = np.zeros((8, 8), dtype=np.uint8); b[3:7, 3:7] = 1
+    a = np.zeros((8, 8), dtype=np.uint8)
+    a[2:6, 2:6] = 1
+    b = np.zeros((8, 8), dtype=np.uint8)
+    b[3:7, 3:7] = 1
     m = compute_localization_metrics([a], [b])
     assert 0.0 < m["iou"] < 1.0
     assert 0.0 < m["f1"] <= 1.0
