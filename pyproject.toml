@@ -18,6 +18,9 @@ dependencies = [
 dev = ["pytest>=8.0", "ruff>=0.4"]
 data = ["datasets>=2.19"]
 
+[project.scripts]
+veriproof = "veriproof.cli:main"
+
 [tool.setuptools.dynamic]
 version = {attr = "veriproof.version.__version__"}
 
