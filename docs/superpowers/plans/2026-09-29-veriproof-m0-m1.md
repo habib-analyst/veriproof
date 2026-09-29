@@ -1,5 +1,7 @@
 # VeriProof M0–M1 Implementation Plan (Foundation + EviForge-DB Screenshots)
 
+> Note (2026-09-29, post-execution): `data_build.py` was later moved to `scripts/build_dataset.py` during the repo restructure. Task texts below describe the plan as written at execution time.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build the VeriProof foundation (package, CI, Forensic Evidence Report schema, eval harness, CLI) and the EviForge-DB v1 screenshot dataset pipeline (synthetic messenger/payment UI renderer, tamper ops with masks, laundering chains, HF dataset builder).
