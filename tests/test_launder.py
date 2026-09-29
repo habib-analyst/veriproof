@@ -12,7 +12,7 @@ def test_empty_chain_unchanged():
     img = _img()
     out, chain = apply_launder(img, [])
     assert chain == "none"
-    assert list(out.getdata()) == list(img.getdata())
+    assert out.tobytes() == img.tobytes()
 
 def test_jpeg85_changes_and_marks_chain():
     out, chain = apply_launder(_img(), ["jpeg85"])
