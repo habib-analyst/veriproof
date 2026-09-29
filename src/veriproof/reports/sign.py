@@ -10,8 +10,10 @@ from veriproof.reports.schema import ForensicReport
 
 
 class SigningKeyBundle:
-    def __init__(self, private_key_pem: str):
-        seed = bytes.fromhex(private_key_pem)
+    """Ed25519 signing key derived from a 32-byte hex seed."""
+
+    def __init__(self, private_key_seed_hex: str):
+        seed = bytes.fromhex(private_key_seed_hex)
         self._key = Ed25519PrivateKey.from_private_bytes(seed)
 
     def public_key_hex(self) -> str:

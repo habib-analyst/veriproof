@@ -9,6 +9,11 @@ def test_render_deterministic():
     a.save(buf_a, "PNG")
     b.save(buf_b, "PNG")
     assert buf_a.getvalue() == buf_b.getvalue()
+    p, q = render_payment(42), render_payment(42)
+    buf_p, buf_q = io.BytesIO(), io.BytesIO()
+    p.save(buf_p, "PNG")
+    q.save(buf_q, "PNG")
+    assert buf_p.getvalue() == buf_q.getvalue()
 
 def test_render_varied_and_correct_size():
     imgs = [render_chat(i) for i in range(3)] + [render_payment(i) for i in range(3)]

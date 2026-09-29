@@ -34,7 +34,7 @@ def _op_contrast(img):
 _OPS = {"jpeg85": _op_jpeg85, "resize05": _op_resize05, "sos": _op_sos,
         "png": _op_png, "noise": _op_noise, "contrast": _op_contrast}
 
-def apply_launder(img, chain):
+def apply_launder(img: Image.Image, chain: list[str]) -> tuple[Image.Image, str]:
     if not chain:
         return img, "none"
     out = img

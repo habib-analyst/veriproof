@@ -69,5 +69,7 @@ def build_hf_dataset(out_dir, n_real, n_tampered, seed):
         rows["style"].append(s["style"])
         rows["split"].append(s["split"])
     ds = datasets.Dataset.from_dict(rows)
-    return datasets.DatasetDict(
+    ds_dict = datasets.DatasetDict(
         {k: ds.filter(lambda x, k=k: x["split"] == k) for k in ("train", "val", "test")})
+    ds_dict.save_to_disk(out_dir)
+    return ds_dict

@@ -10,10 +10,14 @@ def _auc(y_true: list[int], proba: list[float]) -> float:
     return float((pos[:, None] > neg[None, :]).sum() / n)
 
 def compute_detection_metrics(gt_labels, pred_labels, probas):
+    if len(gt_labels) == 0:
+        raise ValueError("cannot compute detection metrics on empty inputs")
     y, p = np.asarray(gt_labels), np.asarray(pred_labels)
     return {"accuracy": float((y == p).mean()), "auc": _auc(gt_labels, probas)}
 
 def compute_localization_metrics(gt_masks, pred_masks):
+    if len(gt_masks) == 0:
+        raise ValueError("cannot compute localization metrics on empty inputs")
     g = np.stack(gt_masks).astype(bool)
     p = np.stack(pred_masks).astype(bool)
     inter = (g & p).sum(axis=(1, 2))

@@ -1,4 +1,5 @@
 import numpy as np
+import pytest
 
 from veriproof.data.render import render_chat
 from veriproof.data.tamper import (
@@ -26,3 +27,10 @@ def test_all_ops_return_valid_masks():
         assert mask.dtype == np.uint8, name
         assert set(np.unique(mask)) <= {0, 1}, name
         assert mask.sum() > 0, name
+
+
+def test_splice_rejects_mismatched_donor():
+    img = render_chat(7)
+    donor = render_chat(8).resize((540, 960))
+    with pytest.raises(ValueError):
+        apply_splice(img, donor, 1)

@@ -9,8 +9,10 @@ def _rng(seed):
     return random.Random(f"veriproof-tamper-{seed}")
 
 def _region(rng, w, h, max_frac=0.35):
-    rw = int(w * rng.uniform(0.1, max_frac)); rh = int(h * rng.uniform(0.1, max_frac))
-    x = rng.randint(0, w - rw); y = rng.randint(0, h - rh)
+    rw = max(1, int(w * rng.uniform(0.1, max_frac)))
+    rh = max(1, int(h * rng.uniform(0.1, max_frac)))
+    x = rng.randint(0, w - rw)
+    y = rng.randint(0, h - rh)
     return x, y, rw, rh
 
 def _mask_from_region(size, x, y, rw, rh):
@@ -27,10 +29,13 @@ def apply_copy_move(img, seed):
     return out, _mask_from_region(img.size, x2, y2, rw, rh)
 
 def apply_splice(img, donor_img, seed):
+    if donor_img.size != img.size:
+        raise ValueError(f"donor size {donor_img.size} != image size {img.size}")
     r = _rng(seed)
     x, y, rw, rh = _region(r, img.width, img.height)
     src = donor_img.crop((x, y, x+rw, y+rh))
-    out = img.copy(); out.paste(src, (x, y))
+    out = img.copy()
+    out.paste(src, (x, y))
     return out, _mask_from_region(img.size, x, y, rw, rh)
 
 def apply_text_edit(img, seed):

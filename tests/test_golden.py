@@ -1,22 +1,21 @@
 import hashlib
-import io
 
 from veriproof.data.render import render_chat
 from veriproof.data.tamper import apply_copy_move
 
 
-def _png_sha(img):
-    b = io.BytesIO()
-    img.save(b, "PNG")
-    return hashlib.sha256(b.getvalue()).hexdigest()
+def _pixels_sha(img):
+    # Raw pixels, not encoded bytes: PNG/JPEG compression output varies with
+    # zlib/libjpeg versions across platforms, pixel buffers do not.
+    return hashlib.sha256(img.tobytes()).hexdigest()
 
 
 def test_render_golden_hash():
-    assert _png_sha(render_chat(42)) == _png_sha(render_chat(42))
-    assert _png_sha(render_chat(42)) == "01ef035f091458336774d7802c3cae787cd12615aa95fbb4f5492bdbdbd77061"
+    assert _pixels_sha(render_chat(42)) == _pixels_sha(render_chat(42))
+    assert _pixels_sha(render_chat(42)) == "7b6a416461cc15b3b965ccf4f0e5f8424bfc2dd17decb76275dbbd6b13cbd3e7"
 
 
 def test_tamper_golden_hash():
     img, mask = apply_copy_move(render_chat(7), 1)
-    assert _png_sha(img) == "419cc14dc1b8a2cdb1c8a7d2a71af601fc73f89eaebd1ddc11936003889f24e0"
+    assert _pixels_sha(img) == "cdf51b2c7fa0778f35861a08dabac203dd603c0aed1a1ca6b4bf9ba994ae0e42"
     assert mask.sum() > 0

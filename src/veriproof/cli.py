@@ -3,7 +3,7 @@ import argparse
 import veriproof
 
 
-def main(argv=None) -> int:
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="veriproof",
         description="Tamper-evident forensic verification for everyday evidence media")
     parser.add_argument("--version", action="version", version=veriproof.__version__)

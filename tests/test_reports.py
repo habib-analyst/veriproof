@@ -28,19 +28,45 @@ def _sample_report():
         schema_version="0.1",
         media_sha256="a" * 64,
         media_format="png",
-        verifying_key_hex="",
     )
     return ForensicReport(analysis=analysis, custody=custody, signature="")
 
+
+def _bundle():
+    return SigningKeyBundle(
+        private_key_seed_hex=Ed25519PrivateKey.generate().private_bytes_raw().hex()
+    )
+
+
 def test_sign_and_verify_roundtrip():
     report = _sample_report()
-    key = Ed25519PrivateKey.generate()
-    pem = key.private_bytes_raw()  # 32 bytes seed; bundle wraps it
-    bundle = SigningKeyBundle(private_key_pem=pem.hex())
-    signed = sign_report(report, bundle)
+    signed = sign_report(report, _bundle())
+    assert signed.custody.verifying_key_hex
     assert verify_report(signed) is True
 
-def test_tampered_report_fails_verification():
-    signed = sign_report(_sample_report(), SigningKeyBundle(private_key_pem=Ed25519PrivateKey.generate().private_bytes_raw().hex()))
+
+def test_tampered_payload_fails_verification():
+    signed = sign_report(_sample_report(), _bundle())
     signed.analysis.tamper_probability = 0.01
     assert verify_report(signed) is False
+
+
+def test_swapped_verifying_key_fails_verification():
+    signed = sign_report(_sample_report(), _bundle())
+    attacker = sign_report(_sample_report(), _bundle())
+    signed.custody.verifying_key_hex = attacker.custody.verifying_key_hex
+    assert verify_report(signed) is False
+
+
+def test_corrupted_signature_fails_verification():
+    signed = sign_report(_sample_report(), _bundle())
+    chars = list(signed.signature)
+    chars[0] = "A" if chars[0] != "A" else "B"
+    signed.signature = "".join(chars)
+    assert verify_report(signed) is False
+
+
+def test_empty_verifying_key_fails_verification():
+    report = _sample_report()
+    report.signature = "AAAA"
+    assert verify_report(report) is False
