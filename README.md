@@ -1,59 +1,39 @@
 # VeriProof
 
-**Proof for the media you actually forward.**
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://github.com/habib-analyst/veriproof)
+[![GitHub stars](https://img.shields.io/github/stars/habib-analyst/veriproof.svg)](https://github.com/habib-analyst/veriproof)
 
-VeriProof checks whether everyday media has been faked or edited: chat screenshots, payment proofs, and voice notes. It finds the tampered parts, scores its own confidence, and returns a signed report you can defend in a court, a bank dispute, or a newsroom.
+Tamper-evident forensic verification for everyday media — chat screenshots, payment proofs, and voice notes. Finds the tampered parts, scores its own confidence, and returns a signed report you can defend in a court, a bank dispute, or a newsroom.
 
-Built on the first open benchmark for forged messenger screenshots (EviForge-DB), a laundering-robust detector (SpecTrace), and a standardized Forensic Evidence Report format (FER).
-
-## What it does
-
-- **Detects** whether a screenshot or voice note is real, tampered, or AI-generated.
-- **Localizes** the edited regions and marks them on the image.
-- **Reports** a calibrated confidence with evidence, in a signed, tamper-evident format (FER).
-- **Runs offline** as a CLI, a Python library, or a REST API. No telemetry. Your media never leaves the machine.
-
-## The problem it solves
-
-- A cloned-voice WhatsApp note cost a Hong Kong man $1.27M (2026). The FBI counts ~$900M a year in US losses to AI-powered scams.
-- A US court jailed a woman over fabricated AI chat texts. The court's own review said: "No one verified the evidence."
-- The best existing document detector scores near random (AUC 0.563) on AI-edited records. No dataset, benchmark, or detector exists for chat and payment screenshots. We verified this against papers, patents, and products before starting.
-- 77% of fraud teams report rising deepfake fraud. 7% say they are prepared. (SAS/ACFE 2026)
-
-## Who is this for
-
-| Person | What they do with VeriProof |
-|---|---|
-| Someone who got a suspicious voice note or payment screenshot | Drops the file in, reads the verdict, keeps their money |
-| Journalist | Checks a leaked chat screenshot before publishing |
-| Lawyer or court | Gets an evidence report showing exactly what was edited, with a signed hash for chain of custody |
-| Bank or fintech fraud team | Runs it on their own servers (GDPR-safe) to verify payment proofs in disputes |
-| Marketplace or insurer | Verifies seller payment screenshots, receipts, and claim photos |
-| Researcher | Uses EviForge-DB as the benchmark, submits models to the leaderboard |
-
-## Status
-
-M0 and M1 are done: package, CI, FER v0.1 (schema + Ed25519 signing), eval harness, CLI, and the EviForge-DB pipeline (synthetic messenger/payment UI, four tamper ops with pixel masks, six laundering ops, HF dataset export). The detector (M2) and voice-note branch (M3) are next.
-
-## Install
+## Quickstart
 
 ```bash
 git clone https://github.com/habib-analyst/veriproof.git
 cd veriproof
 python -m venv .venv
-.venv/Scripts/pip install -e ".[dev]"    # Windows; .venv/bin/ on Linux/macOS
-.venv/Scripts/pip install -e ".[data]"   # optional: Hugging Face dataset export
+.venv/bin/pip install -e ".[dev]"    # .venv\Scripts\ on Windows
+
+.venv/bin/veriproof --version
+.venv/bin/python scripts/build_dataset.py --out data/processed/eviforge-db-v1 --n-real 200 --n-tampered 200 --seed 20260929
+.venv/bin/pytest tests/ -v
 ```
 
 Python 3.11+.
 
-## Quickstart
+## How it works
 
-```bash
-.venv/Scripts/veriproof --version
-.venv/Scripts/python scripts/build_dataset.py --out data/processed/eviforge-db-v1 --n-real 200 --n-tampered 200 --seed 20260929
-.venv/Scripts/pytest tests/ -v
-```
+Three parts, one pipeline:
+
+1. **EviForge-DB** — the first open benchmark for forged messenger screenshots: synthetic messenger/payment UI rendering, four tamper operations with pixel masks, six laundering operations (recompression, resizing, screenshots-of-screenshots), and Hugging Face dataset export.
+2. **SpecTrace** — a laundering-robust detector trained on that benchmark (in progress).
+3. **FER (Forensic Evidence Report)** — a standardized evidence report format (schema v0.1 + Ed25519 signing) with calibrated confidence and evidence pointers.
+
+Runs offline as a CLI, a Python library, or a REST API. No telemetry — your media never leaves the machine.
+
+## Status and honest limitations
+
+This project is early. M0 (package, CI, FER schema + signing, eval harness, CLI) and M1 (EviForge-DB pipeline) are done; the detector (M2) and voice-note branch (M3) are next. The dataset is synthetic, and the report's trust model (who signs, who to trust) is not solved. The detector does not exist yet — what's here is the benchmark, the format, and the infrastructure it will plug into.
 
 ## Layout
 
@@ -69,29 +49,10 @@ scripts/        # dataset build entry point
 docs/           # design spec, implementation plan, research reports
 ```
 
-## Roadmap
-
-| Milestone | What ships |
-|---|---|
-| M0 done | Package, CI, FER schema, eval harness, CLI |
-| M1 done | EviForge-DB v1: screenshots, tamper ops, laundering chains |
-| M1.5 | Generative-edit lane (diffusion inpainting) + UI-semantic metadata in the dataset |
-| M2 | SpecTrace detector with laundering-robust training + calibrated confidence |
-| M3 | Voice-note branch + Opus/AMR-WB codec benchmark |
-| M4 | Full FER pipeline, CLI verify, REST API, key registry design |
-| M5 | Public leaderboard + community submission guide + papers |
-
-## Honest limitations
-
-This project is early. The dataset is synthetic; the detector does not exist yet; the report's trust model (who signs, who to trust) is not solved. Full list in [PROJECT.md](PROJECT.md), section 14, kept current.
-
-## Research base
-
-The project is grounded in two citation-backed research reports:
-
-- [Gaps in deepfake / harm-AI detection](docs/research/DEEP_RESEARCH_deepfake-detection-gaps-2026.md) (36 sources)
-- [Enterprise-urgent problems and prior art](docs/research/DEEP_RESEARCH_deepfake-enterprise-gaps-2026.md) (38 sources)
-
 ## License
 
-[MIT](LICENSE) © 2026 Habib Ur Rehman
+MIT © 2026 Habib Ur Rehman
+
+---
+Built by [Habib Ur Rehman](https://github.com/habib-analyst) · ML/AI Engineer & healthcare-AI researcher ·
+[LinkedIn](https://www.linkedin.com/in/hur-dev) · [habib.top](https://habib.top)
